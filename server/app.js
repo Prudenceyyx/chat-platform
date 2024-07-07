@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import { MongoClient } from 'mongodb';
 
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));

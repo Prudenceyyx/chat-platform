@@ -1,46 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
+import Nav from './components/nav';
+import Side from './components/side';
+import ChatChannels from './components/chat-channel';
+import './style.scss';
 
 const socket = io('http://localhost:3000', { withCredentials: true });
 
-const Chat = (props) => {
-  const inputRef = useRef(null);
-  const buttonRef = useRef(null);
-  const [messages, setMessages] = useState([]);
-
-  const sendMessage = (e) => {
-    e.preventDefault();
-    if (inputRef.current.value) {
-      socket.emit('message', inputRef.current.value);
-      inputRef.current.value = '';
-    }
-  };
-
-  useEffect(() => {
-    socket.on('message', (msg) => {
-      setMessages((prevState) => [...prevState, msg]);
-    });
-    return () => {
-      socket.off('message');
-    };
-  }, []);
-
+const App = (props) => {
   return (
-    <div>
-      <div className="history">
-        <div>history</div>
-        <ul className="messages">
-          {messages.map((m, index) => {
-            return <li key={index}>{m}</li>;
-          })}
-        </ul>
-      </div>
-      <input ref={inputRef} type="text" />
-      <button ref={buttonRef} onClick={sendMessage}>
-        Send
-      </button>
-    </div>
+    <>
+      <Nav />
+      <main className="flex pt-24">
+        <Side />
+        <ChatChannels />
+      </main>
+    </>
   );
 };
 
-export default Chat;
+export default App;
+export { socket };
