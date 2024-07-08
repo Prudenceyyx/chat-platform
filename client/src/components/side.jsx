@@ -1,5 +1,5 @@
 import React from "react";
-// import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 
 const menus = [
   {
@@ -21,23 +21,35 @@ const menus = [
 
 const Side = (props) => {
   return (
-    <div className="side text-white pt-[30px] pl-7">
-      {menus.map(({ name, children, index }) => (
-        <div key={name} className="border-top border-1 border-[#26252D] pt-[30px]">
-          <div className="text-sm text-[#797B85] mb-[30px]">{name}</div>
-          {(children || []).map((child, childIndex) => {
-            return (
-              <div key={child.name} className="h-[40px] mb-[30px] flex items-center">
-                <div className="h-[40px] w-[40px] rounded-full bg-[#26252D] flex justify-center items-center">
-                  <img className="h-[24px] w-[24px] object-contain"  src={'/assets/'+child.icon} />
-                </div>
-                <div className="text-lg text-[#929699] pl-4">{child.name}</div>
-              </div>
-            );
-          })}
-        </div>
-      ))}
-      {/* <TabList className="w-1/3">
+    <TabGroup className="side">
+      <TabList className="side text-white pt-[30px]">
+        {menus.map(({ name, children, index }) => (
+          <div
+            key={name}
+            className={index !== 0 && "border-t border-1 border-[#26252D] pt-[30px]"}
+          >
+            <div className="text-sm text-[#797B85] pl-7 pt-[15px] pb-[15px]">{name}</div>
+            {(children || []).map((child, childIndex) => {
+              return (
+                <Tab
+                  key={child.name}
+                  className="side-tab w-full pt-[15px] pb-[15px] flex items-center pl-7 pr-7"
+                >
+                  <div className="side-tab__icon h-[40px] w-[40px] rounded-full bg-[#26252D] flex justify-center items-center">
+                    <img
+                      className="h-[24px] w-[24px] object-contain"
+                      src={"/assets/" + child.icon}
+                    />
+                  </div>
+                  <div className="side-tab__text text-lg text-[#929699] pl-4">
+                    {child.name}
+                  </div>
+                </Tab>
+              );
+            })}
+          </div>
+        ))}
+        {/* <TabList className="w-1/3">
         {menus.map(({ name, index }) => (
           <Tab
             key={name}
@@ -48,7 +60,8 @@ const Side = (props) => {
           </Tab>
         ))}
       </TabList> */}
-    </div>
+      </TabList>
+    </TabGroup>
   );
 };
 
