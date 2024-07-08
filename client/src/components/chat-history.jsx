@@ -38,6 +38,7 @@ const ChatMessage = (props) => {
       })}
     >
       <Avatar
+      name={message.sender}
         className={clsx("shrink-0", {
           "order-2 ml-[10px]": isUser,
           "mr-[10px]": !isUser,
@@ -78,10 +79,14 @@ const ChatHistory = (props) => {
   const [messages, setMessages] = useState([]);
   const ref = useRef(null);
 
+  const usernameKey = "chat_username";
+  const username = localStorage.getItem(usernameKey);
+  console.log(username)
+
   useEffect(() => {
     setMessages([]);
     socket.on(`message:${channelID}`, (msg) => {
-      console.log(msg);
+      // console.log(msg);
       setMessages((prev) => {
         return [...prev, msg];
       });
@@ -105,7 +110,7 @@ const ChatHistory = (props) => {
       element.scrollTop = element.scrollHeight;
     }
   }, [messages, channelID]);
-  console.log(channelID, messages, isLoading);
+  // console.log(channelID, messages, isLoading);
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -118,7 +123,7 @@ const ChatHistory = (props) => {
           <ChatMessage
             key={msg._id}
             message={msg}
-            isUser={msg.sender === "me"}
+            isUser={msg.sender === username}
           />
         );
       })}

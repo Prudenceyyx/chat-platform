@@ -80,7 +80,7 @@ const ChatChannels = (props) => {
             className="block w-full h-[75px] py-[16px] px-[20px] flex focus:outline-none data-[selected]:bg-[#26252D] data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10"
             // onClick={() => setSelectedTab(index)}
           >
-            <Avatar className="shrink-0" />
+            <Avatar className="shrink-0" name={name} />
             <div className="w-full px-[10px] ">
               <div className="flex justify-between w-full items-center">
                 <div className="text-sm/6 font-medium text-[#C9C7D0]">

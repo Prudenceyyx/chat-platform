@@ -3,6 +3,8 @@ import Search from './search'
 import Avatar from './avatar';
 
 const Nav = (props) => {
+const username = localStorage.getItem('chat_username')
+
   return (
     <nav className="w-full h-[70px] bg-[#0C0E13] text-white flex justify-between items-center pl-5 pr-5">
       <div className="flex items-center">
@@ -24,7 +26,7 @@ const Nav = (props) => {
           className="h-[24px] w-[24px] ml-[20px]"
           src="/assets/icons/help.svg"
         />
-        <Avatar className="shrink-0 ml-[20px] " />
+        <Avatar className="shrink-0 ml-[20px]" name={username} />
 
       </div>
     </nav>

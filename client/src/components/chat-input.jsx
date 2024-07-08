@@ -9,11 +9,15 @@ const ChatInput = (props) => {
   const inputRef = useRef(null);
   const buttonRef = useRef(null);
 
+  const usernameKey = "chat_username";
+  const username = localStorage.getItem(usernameKey);
+  // console.log(username)
+
   const sendMessage = () => {
     if (inputRef.current.value) {
       const newMessage = {
         content: inputRef.current.value,
-        sender: "me",
+        sender: username,
         channelID,
         createdAt: new Date()
       };
@@ -31,11 +35,11 @@ const ChatInput = (props) => {
     if (event.ctrlKey && event.key === "Enter") {
       event.preventDefault();
       // Allow default action (insert new line)
-      console.log("Ctrl+Enter key pressed!");
+      // console.log("Ctrl+Enter key pressed!");
       lineBreak();
     } else if (event.key === "Enter") {
       event.preventDefault();
-      console.log("Enter key pressed!");
+      // console.log("Enter key pressed!");
       sendMessage();
     }
   };
