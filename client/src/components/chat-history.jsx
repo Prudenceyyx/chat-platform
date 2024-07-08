@@ -62,7 +62,7 @@ const ChatMessage = (props) => {
             "p-[15px] rounded-lg font-medium text-base leading-6",
             {
               "rounded-tl-none bg-[#454451] text-white ": !isUser,
-              "rounded-tr-none bg-[#04B17D]": isUser,
+              "rounded-tr-none bg-[#82d8be]": isUser,
             }
           )}
         >
