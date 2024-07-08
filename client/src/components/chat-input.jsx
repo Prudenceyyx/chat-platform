@@ -5,20 +5,26 @@ import { Field, Textarea } from "@headlessui/react";
 import clsx from "clsx";
 
 const ChatInput = (props) => {
+  const { channelID } = props;
   const inputRef = useRef(null);
   const buttonRef = useRef(null);
 
   const sendMessage = () => {
     if (inputRef.current.value) {
-      socket.emit("message", inputRef.current.value);
+      const newMessage = {
+        content: inputRef.current.value,
+        sender: "me",
+        channelID,
+        createdAt: new Date()
+      };
+      console.log(channelID)
+      socket.emit("message", newMessage);
       inputRef.current.value = "";
     }
   };
 
   const lineBreak = () => {
-    if (inputRef.current.value) {
-      inputRef.current.value += "\n";
-    }
+    inputRef.current.value += "\n";
   };
 
   const onKeyDown = (event) => {

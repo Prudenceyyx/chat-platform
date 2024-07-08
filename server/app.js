@@ -40,8 +40,6 @@ app.get("/channels", async (req, res) => {
 app.get("/channel-messages", async (req, res) => {
   const {channelID} = req.query;
   const messages = await getChannelMessages(channelID);
-  console.log('channel-m', messages)
-
   res.send({ data: messages });
 });
 

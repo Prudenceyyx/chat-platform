@@ -43,13 +43,7 @@ export async function getChannelMessages(channelID) {
 export async function addToChat(msg) {
   const db = client.db("chat");
   const collection = db.collection("messages");
-  const channelID = "668b7e62e0fa5754337851ee";
-  const result = await collection.insertOne({
-    content: msg,
-    sender: "me",
-    channelID: channelID,
-  });
-  console.log('addToChat', result)
+  const result = await collection.insertOne(msg);
 }
 
 async function run() {
