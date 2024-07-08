@@ -1,5 +1,6 @@
 import React from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import clsx from "clsx";
 
 const menus = [
   {
@@ -21,12 +22,12 @@ const menus = [
 
 const Side = (props) => {
   return (
-    <TabGroup className="side">
-      <TabList className="side text-white pt-[30px]">
-        {menus.map(({ name, children, index }) => (
+    <TabGroup className="side w-[225px] shrink-0">
+      <TabList className="side text-white pt-4">
+        {menus.map(({ name, children }, index) => (
           <div
             key={name}
-            className={index !== 0 && "border-t border-1 border-[#26252D] pt-[30px]"}
+            className={clsx('pt-[30px]',  index !== 0 && "border-t border-1 border-[#26252D]")}
           >
             <div className="text-sm text-[#797B85] pl-7 pt-[15px] pb-[15px]">{name}</div>
             {(children || []).map((child, childIndex) => {

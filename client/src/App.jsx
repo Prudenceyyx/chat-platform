@@ -11,7 +11,9 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 
-const socket = io("http://localhost:3000", { withCredentials: true });
+const socket = io("http://localhost:3000", 
+  // { withCredentials: true }
+);
 
 const queryClient = new QueryClient();
 const App = (props) => {
@@ -19,7 +21,7 @@ const App = (props) => {
     <QueryClientProvider client={queryClient}>
     <>
       <Nav />
-      <main className="flex">
+      <main className="flex h-[calc(100vh-70px)]">
         <Side />
         <ChatChannels />
       </main>
