@@ -5,7 +5,7 @@ import { dirname, join } from "node:path";
 import { Server } from "socket.io";
 import cors from "cors";
 
-import { getChannelMessages, getChannels } from "./db.js";
+import { getChannelMessages, getChannels, addToChat } from "./db.js";
 
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -34,16 +34,16 @@ app.get("/channels", async (req, res) => {
   // const messages = await getChannelMessages(channelID);
   // res.send({messages: messages, channelID: channelID})
   const channels = await getChannels();
-  console.log(channels)
   res.send({ channels });
 });
 
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-  socket.on("message", (msg) => {
-    console.log("message", msg);
-    io.emit("message", msg);
+  socket.on("message", async (msg) => {
+    // console.log("message", msg);
+    await addToChat(msg);
+    // io.emit("message", msg);
   });
 });
 

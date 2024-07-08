@@ -27,17 +27,29 @@ export async function findStudentsByName(collection, name) {
 }
 
 export async function getChannels() {
-  const db = client.db('chat');
-    const collection = db.collection('channels');
+  const db = client.db("chat");
+  const collection = db.collection("channels");
 
   return collection.find({}).toArray();
 }
 
 export async function getChannelMessages(channelID) {
-   const db = client.db('chat');
-    const collection = db.collection('messages');
+  const db = client.db("chat");
+  const collection = db.collection("messages");
 
-  return collection.find({channelID}).toArray();
+  return collection.find({ channelID }).toArray();
+}
+
+export async function addToChat(msg) {
+  const db = client.db("chat");
+  const collection = db.collection("messages");
+  const channelID = "668b7e62e0fa5754337851ee";
+  const result = await collection.insertOne({
+    content: msg,
+    sender: "me",
+    channelID: channelID,
+  });
+  console.log('addToChat', result)
 }
 
 async function run() {
