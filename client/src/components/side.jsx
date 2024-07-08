@@ -1,25 +1,39 @@
-import React from 'react';
+import React from "react";
 // import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
 const menus = [
   {
-    name: 'Engage',
-    children: [{ name: 'Forum' }, { name: 'Chat' }, { name: 'Matches' }],
+    name: "Engage",
+    children: [
+      { name: "Forum", icon: "forum.svg" },
+      { name: "Chat", icon: "chat.svg" },
+      { name: "Matches", icon: "matches.png" },
+    ],
   },
   {
-    name: 'People',
-    children: [{ name: 'Members' }, { name: 'Contributors' }],
+    name: "People",
+    children: [
+      { name: "Members", icon: "members.svg" },
+      { name: "Contributors", icon: "contributors.png" },
+    ],
   },
 ];
 
 const Side = (props) => {
   return (
-    <div className="side text-white">
+    <div className="side text-white pt-[30px] pl-7">
       {menus.map(({ name, children, index }) => (
-        <div key={name}>
-          <div>{name}</div>
+        <div key={name} className="border-top border-1 border-[#26252D] pt-[30px]">
+          <div className="text-sm text-[#797B85] mb-[30px]">{name}</div>
           {(children || []).map((child, childIndex) => {
-            return <div key={child.name}>{child.name}</div>;
+            return (
+              <div key={child.name} className="h-[40px] mb-[30px] flex items-center">
+                <div className="h-[40px] w-[40px] rounded-full bg-[#26252D] flex justify-center items-center">
+                  <img className="h-[24px] w-[24px] object-contain"  src={'/assets/'+child.icon} />
+                </div>
+                <div className="text-lg text-[#929699] pl-4">{child.name}</div>
+              </div>
+            );
           })}
         </div>
       ))}

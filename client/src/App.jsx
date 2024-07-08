@@ -11,7 +11,7 @@ const App = (props) => {
   return (
     <>
       <Nav />
-      <main className="flex pt-24">
+      <main className="flex">
         <Side />
         <ChatChannels />
       </main>
