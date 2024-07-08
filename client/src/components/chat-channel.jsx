@@ -5,16 +5,13 @@ import { socket } from "../App";
 import Search from "./search";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import ChatHistory from "./chat-history";
 
-function useChannels(channelID) {
+function useChannels() {
   return useQuery({
-    queryKey: ["data"],
+    queryKey: ["channels"],
     queryFn: async () => {
       const { data } = await axios.get("http://localhost:3000/channels", {
-        params: {
-          channelID: channelID,
-        },
-        // withCredentials: true,
         headers: {
           "Access-Control-Allow-Origin": "http://localhost:3001",
         },
@@ -23,66 +20,6 @@ function useChannels(channelID) {
     },
   });
 }
-
-// const categories = [
-//   {
-//     name: 'Recent',
-//     posts: [
-//       {
-//         id: 1,
-//         title: 'Does drinking coffee make you smarter?',
-//         date: '5h ago',
-//         commentCount: 5,
-//         shareCount: 2,
-//       },
-//       {
-//         id: 2,
-//         title: "So you've bought coffee... now what?",
-//         date: '2h ago',
-//         commentCount: 3,
-//         shareCount: 2,
-//       },
-//     ],
-//   },
-//   {
-//     name: 'Popular',
-//     posts: [
-//       {
-//         id: 1,
-//         title: 'Is tech making coffee better or worse?',
-//         date: 'Jan 7',
-//         commentCount: 29,
-//         shareCount: 16,
-//       },
-//       {
-//         id: 2,
-//         title: 'The most innovative things happening in coffee',
-//         date: 'Mar 19',
-//         commentCount: 24,
-//         shareCount: 12,
-//       },
-//     ],
-//   },
-//   {
-//     name: 'Trending',
-//     posts: [
-//       {
-//         id: 1,
-//         title: 'Ask Me Anything: 10 answers to your questions about coffee',
-//         date: '2d ago',
-//         commentCount: 9,
-//         shareCount: 5,
-//       },
-//       {
-//         id: 2,
-//         title: "The worst advice we've ever heard about coffee",
-//         date: '4d ago',
-//         commentCount: 1,
-//         shareCount: 2,
-//       },
-//     ],
-//   },
-// ];
 
 const channelList = [
   { name: "a" },
@@ -100,8 +37,8 @@ const messageHistory = {
 
 const ChatChannels = (props) => {
   const { data, isPending, error } = useChannels();
-  const [messages, setMessages] = useState(messageHistory);
-  const [selectedTab, setSelectedTab] = useState(channelList[0].name);
+  // const [messages, setMessages] = useState(messageHistory);
+  // const [selectedTab, setSelectedTab] = useState(channelList[0].name);
 
   if (isPending) return "Loading...";
 
@@ -136,11 +73,11 @@ const ChatChannels = (props) => {
         >
           <Search />
         </div>
-        {data.channels.map(({ name, index }) => (
+        {data.data.map(({ _id, name }, index) => (
           <Tab
-            key={name}
+            key={_id}
             className="block w-full h-[75px] py-[16px] px-[20px] flex focus:outline-none data-[selected]:bg-[#26252D] data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10"
-            onClick={() => setSelectedTab(index)}
+            // onClick={() => setSelectedTab(index)}
           >
             <div className="rounded-full h-[40px] w-[40px] bg-white shrink-0"></div>
             <div className="w-full px-[10px] ">
@@ -158,53 +95,21 @@ const ChatChannels = (props) => {
         ))}
       </TabList>
       <TabPanels className="grow h-full">
-        {Object.entries(messages).map(([channelID, chatList], index) => (
-          <TabPanel
-            key={channelID}
-            className="h-full flex flex-col justify-between bg-[#26252D] p-3"
+        {data.data.map(({ _id, name }, index) => {
+          return <TabPanel
+            key={_id}
+            className="h-full flex flex-col justify-between bg-[#26252D]"
           >
             <div
-              className="h-16 flex items-center font-semibold text-lg text-white px-[20px]"
+              className="h-16 shrink-0 flex items-center font-semibold text-lg text-white px-[20px]"
               style={{ boxShadow: "0px 1px 0px 0px #FFFFFF1A" }}
             >
-              {data.channels[index].name}
+              {name}
             </div>
-            <ul className="h-full overflow-y-auto">
-              {chatList.map((msg, index) => {
-                return (
-                  <li
-                    key={index}
-                    className="relative rounded-md p-3 text-sm/6 transition hover:bg-white/5"
-                  >
-                    <div className="font-semibold text-white">
-                      {msg.content}
-                    </div>
-                    <ul className="flex gap-2 text-white/50" aria-hidden="true">
-                      <li>{msg.time}</li>
-                      <li>{msg.channel}</li>
-                    </ul>
-                  </li>
-                );
-              })}
-              {/* {posts.map((post) => (
-                    <li key={post.id} className="relative rounded-md p-3 text-sm/6 transition hover:bg-white/5">
-                      <a href="#" className="font-semibold text-white">
-                        <span className="absolute inset-0" />
-                        {post.title}
-                      </a>
-                      <ul className="flex gap-2 text-white/50" aria-hidden="true">
-                        <li>{post.date}</li>
-                        <li aria-hidden="true">&middot;</li>
-                        <li>{post.commentCount} comments</li>
-                        <li aria-hidden="true">&middot;</li>
-                        <li>{post.shareCount} shares</li>
-                      </ul>
-                    </li>
-                  ))} */}
-            </ul>
-            <ChatInput />
-          </TabPanel>
-        ))}
+            <ChatHistory channelID={_id} />
+            <ChatInput channelID={_id} />
+          </TabPanel>;
+        })}
       </TabPanels>
     </TabGroup>
   );

@@ -34,8 +34,17 @@ app.get("/channels", async (req, res) => {
   // const messages = await getChannelMessages(channelID);
   // res.send({messages: messages, channelID: channelID})
   const channels = await getChannels();
-  res.send({ channels });
+  res.send({ data: channels });
 });
+
+app.get("/channel-messages", async (req, res) => {
+  const {channelID} = req.query;
+  const messages = await getChannelMessages(channelID);
+  console.log('channel-m', messages)
+
+  res.send({ data: messages });
+});
+
 
 io.on("connection", (socket) => {
   console.log("A user connected");

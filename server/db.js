@@ -37,7 +37,7 @@ export async function getChannelMessages(channelID) {
   const db = client.db("chat");
   const collection = db.collection("messages");
 
-  return collection.find({ channelID }).toArray();
+  return await collection.find({ channelID }).toArray();
 }
 
 export async function addToChat(msg) {
