@@ -49,8 +49,9 @@ io.on("connection", (socket) => {
 
   socket.on("message", async (msg) => {
     // console.log("message", msg);
-    await addToChat(msg);
-    // io.emit("message", msg);
+    const result = await addToChat(msg);
+    // console.log(result,`message:${msg.channelID}`)
+    io.emit(`message:${msg.channelID}`, {...msg});
   });
 });
 

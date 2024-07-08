@@ -17,7 +17,7 @@ const ChatInput = (props) => {
         channelID,
         createdAt: new Date()
       };
-      console.log(channelID)
+      // console.log(channelID)
       socket.emit("message", newMessage);
       inputRef.current.value = "";
     }

@@ -1,5 +1,6 @@
 import React from "react";
 import Search from './search'
+import Avatar from './avatar';
 
 const Nav = (props) => {
   return (
@@ -23,7 +24,8 @@ const Nav = (props) => {
           className="h-[24px] w-[24px] ml-[20px]"
           src="/assets/icons/help.svg"
         />
-        <div className="h-[40px] w-[40px] ml-[20px] shrink-0 rounded-full bg-white"></div>
+        <Avatar className="shrink-0 ml-[20px] " />
+
       </div>
     </nav>
   );

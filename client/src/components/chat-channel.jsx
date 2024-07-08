@@ -6,6 +6,7 @@ import Search from "./search";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import ChatHistory from "./chat-history";
+import Avatar from "./avatar";
 
 function useChannels() {
   return useQuery({
@@ -79,7 +80,7 @@ const ChatChannels = (props) => {
             className="block w-full h-[75px] py-[16px] px-[20px] flex focus:outline-none data-[selected]:bg-[#26252D] data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10"
             // onClick={() => setSelectedTab(index)}
           >
-            <div className="rounded-full h-[40px] w-[40px] bg-white shrink-0"></div>
+            <Avatar className="shrink-0" />
             <div className="w-full px-[10px] ">
               <div className="flex justify-between w-full items-center">
                 <div className="text-sm/6 font-medium text-[#C9C7D0]">
