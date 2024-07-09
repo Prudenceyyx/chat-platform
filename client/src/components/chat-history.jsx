@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Avatar from "./avatar";
 import clsx from "clsx";
 import { socket } from "../App";
-import { gql, useQuery, useMutation  } from "urql";
+import { gql, useQuery, useMutation } from "urql";
 import { Button } from "@headlessui/react";
 
 const MessagesQuery = gql`
@@ -36,11 +36,11 @@ const ChatMessage = (props) => {
   };
 
   useEffect(() => {
-    console.log(message._id, result)
+    console.log(message._id, result);
     if (result.data && result.data.deleteMessage.success) {
-      onDelete?.(result.data.deleteMessage._id)
+      onDelete?.(result.data.deleteMessage._id);
     }
-  }, [result])
+  }, [result]);
 
   return (
     <li
@@ -88,10 +88,13 @@ const ChatMessage = (props) => {
             )}
             style={{ borderColor: "#FFFFFF10" }}
           >
-            <Button className="h-9 w-9 flex items-center justify-center data-[hover]:bg-gray-600 rounded-md transition-bg duration-100" >
+            <Button className="h-9 w-9 flex items-center justify-center data-[hover]:bg-gray-600 rounded-md transition-bg duration-100">
               <img src="/assets/icons/quote.svg" className="h-4 w-4" />
             </Button>
-            <Button onClick={() => handleDelete(message._id)} className="h-9 w-9 flex items-center justify-center data-[hover]:bg-gray-600 rounded-md transition-bg duration-100">
+            <Button
+              onClick={() => handleDelete(message._id)}
+              className="h-9 w-9 flex items-center justify-center data-[hover]:bg-gray-600 rounded-md transition-bg duration-100"
+            >
               <img src="/assets/icons/delete.svg" className="h-4 w-4" />
             </Button>
           </div>
@@ -121,14 +124,21 @@ const ChatHistory = (props) => {
   useEffect(() => {
     setMessages([]);
     socket.on(`message:${channelID}`, (msg) => {
-      console.log(msg);
       setMessages((prev) => {
         return [...prev, msg];
       });
     });
 
+    socket.on(`message-delete:${channelID}`, (messageID) => {
+      console.log(messageID);
+      setMessages((prev) => {
+        return [...prev].filter((m) => m._id !== messageID);
+      });
+    });
+
     return () => {
       socket.off(`message:${channelID}`);
+      socket.off(`message-delete:${channelID}`);
     };
   }, [channelID]);
 
@@ -159,8 +169,11 @@ const ChatHistory = (props) => {
             isUser={msg.sender === username}
             onDelete={(messageID) => {
               setMessages((prev) => {
-                return [...prev].filter((m) => m._id !== messageID)
-              })
+                return [...prev].filter((m) => m._id !== messageID);
+              });
+              if (msg.sender === username) {
+                socket.emit(`message-delete`, messageID, channelID);
+              }
             }}
           />
         );

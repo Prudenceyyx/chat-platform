@@ -64,6 +64,10 @@ io.on("connection", (socket) => {
     const result = await addToChat(msg);
     io.emit(`message:${msg.channelID}`, {...msg});
   });
+
+  socket.on("message-delete", async (messageID, channelID) => {
+    io.emit(`message-delete:${channelID}`, messageID);
+  });
 });
 
 server.listen(3000, () => {
