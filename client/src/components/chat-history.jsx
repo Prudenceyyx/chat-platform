@@ -81,12 +81,10 @@ const ChatHistory = (props) => {
 
   const usernameKey = "chat_username";
   const username = localStorage.getItem(usernameKey);
-  console.log(username)
 
   useEffect(() => {
     setMessages([]);
     socket.on(`message:${channelID}`, (msg) => {
-      // console.log(msg);
       setMessages((prev) => {
         return [...prev, msg];
       });

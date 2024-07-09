@@ -4,13 +4,15 @@ import Nav from "./components/nav";
 import Side from "./components/side";
 import ChatChannels from "./components/chat-channel";
 import "./style.scss";
-import {
-  useQuery,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
-import Chance from './utils/chance.min.js'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Chance from "./utils/chance.min.js";
+
+import { Client, Provider, cacheExchange, fetchExchange } from "urql";
+
+const client = new Client({
+  url: "http://localhost:3000/graphql",
+  exchanges: [cacheExchange, fetchExchange],
+});
 
 const socket = io(
   "http://localhost:3000"
@@ -33,13 +35,15 @@ const App = (props) => {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Nav />
-      <main className="flex h-[calc(100vh-70px)]">
-        <Side />
-        <ChatChannels />
-      </main>
-    </QueryClientProvider>
+    <Provider value={client}>
+      <QueryClientProvider client={queryClient}>
+        <Nav />
+        <main className="flex h-[calc(100vh-70px)]">
+          <Side />
+          <ChatChannels />
+        </main>
+      </QueryClientProvider>
+    </Provider>
   );
 };
 

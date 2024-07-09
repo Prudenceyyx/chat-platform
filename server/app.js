@@ -4,15 +4,25 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { Server } from "socket.io";
 import cors from "cors";
+import { createHandler } from 'graphql-http/lib/use/http';
+import schema from './schema/index.js';
 
 import { getChannelMessages, getChannels, addToChat } from "./db.js";
 
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const handler = createHandler({ schema });
 
+const list = ['http://localhost:3001']
 const CORS_OPTIONS = {
   cors: {
-    origin: "http://localhost:3001",
+    origin: function (origin, callback) {
+      if (list.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
     methods: ["GET", "POST"],
     allowedHeaders: ["Access-Control-Allow-Origin"],
     // credentials: true,
@@ -43,14 +53,15 @@ app.get("/channel-messages", async (req, res) => {
   res.send({ data: messages });
 });
 
+app.all('/graphql', (req, res) => {
+  handler(req, res);
+});
 
 io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("message", async (msg) => {
-    // console.log("message", msg);
     const result = await addToChat(msg);
-    // console.log(result,`message:${msg.channelID}`)
     io.emit(`message:${msg.channelID}`, {...msg});
   });
 });
