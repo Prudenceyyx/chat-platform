@@ -11,6 +11,12 @@ html {
     background-color: #0C0E13;
 }
 
+:root {
+    --text-primary: #C9C7D0;
+    --text-secondary: #7B798F;
+
+}
+
 .side-tab {
     &:hover {
         // background-color: aquamarine;
@@ -23,6 +29,10 @@ html {
             color: #04B17D;
         }
     }
+}
 
-    
+.message__content {
+    &:hover .message__content__icons {
+        opacity: 1;
+    }
 }
