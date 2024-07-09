@@ -4,7 +4,7 @@ import { Field, Textarea } from "@headlessui/react";
 import clsx from "clsx";
 
 const ChatInput = (props) => {
-  const { channelID } = props;
+  const { channelID, quotingMessage } = props;
   const inputRef = useRef(null);
 
   const usernameKey = "chat_username";
@@ -42,15 +42,14 @@ const ChatInput = (props) => {
   };
 
   return (
-    <div className="min-h-[100px]">
+    <div className="min-h-[100px] border-t border-solid mt-3 " style={{borderColor: '#ffffff10'}}>
       <Field>
         <Textarea
           ref={inputRef}
           className={clsx(
-            "mt-3 block w-full resize-none rounded-lg border-none bg-white/5 py-1.5 px-3 text-sm/6 text-white",
-            "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
+            "block w-full resize-none w-full bg-[#26252D] rounded-lg border-none py-1.5 px-3 text-sm/6 text-white",
+            "focus:outline-none "
           )}
-          rows={3}
           placeholder="Press Enter to send. Press Ctrl+Enter to break the line."
           onKeyDown={onKeyDown}
         />

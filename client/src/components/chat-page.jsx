@@ -1,11 +1,9 @@
 import React from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
-import ChatInput from "./chat-input";
 import Search from "./search";
-import ChatHistory from "./chat-history";
+import ChatPanel from "./chat-panel";
 import Avatar from "./avatar";
 import { gql, useQuery } from "urql";
-
 
 const ChannelsQuery = gql`
   query {
@@ -16,7 +14,7 @@ const ChannelsQuery = gql`
   }
 `;
 
-const ChatChannels = (props) => {
+const ChatPage = (props) => {
   const [result, reexecuteQuery] = useQuery({
     query: ChannelsQuery,
   });
@@ -56,20 +54,13 @@ const ChatChannels = (props) => {
         ))}
       </TabList>
       <TabPanels className="grow h-full">
-        {data.channels.map(({ id, name }, index) => {
+        {data.channels.map((channel, index) => {
           return (
             <TabPanel
-              key={id}
+              key={channel.id}
               className="h-full flex flex-col justify-between bg-[#26252D]"
             >
-              <div
-                className="h-16 shrink-0 flex items-center font-semibold text-lg text-white px-[20px]"
-                style={{ boxShadow: "0px 1px 0px 0px #FFFFFF1A" }}
-              >
-                {name}
-              </div>
-              <ChatHistory channelID={id} />
-              <ChatInput channelID={id} />
+              <ChatPanel channel={channel} />
             </TabPanel>
           );
         })}
@@ -78,4 +69,4 @@ const ChatChannels = (props) => {
   );
 };
 
-export default ChatChannels;
+export default ChatPage;

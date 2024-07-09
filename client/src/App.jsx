@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import Nav from "./components/nav";
 import Side from "./components/side";
-import ChatChannels from "./components/chat-channel";
+import ChatPage from "./components/chat-page";
 import "./style.scss";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Chance from "./utils/chance.min.js";
@@ -39,7 +39,7 @@ const App = (props) => {
         <Nav />
         <main className="flex h-[calc(100vh-70px)]">
           <Side />
-          <ChatChannels />
+          <ChatPage />
         </main>
       </QueryClientProvider>
     </Provider>
