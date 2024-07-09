@@ -10,6 +10,12 @@ const ChannelsQuery = gql`
     channels {
       id
       name
+      lastMessage {
+        _id
+        id
+        sender
+        content
+      }
     }
   }
 `;
@@ -33,25 +39,32 @@ const ChatPage = (props) => {
         >
           <Search />
         </div>
-        {data.channels.map(({ id, name }, index) => (
-          <Tab
-            key={id}
-            className="block w-full h-[75px] py-[16px] px-[20px] flex focus:outline-none data-[selected]:bg-[#26252D] data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10"
-          >
-            <Avatar className="shrink-0" name={name} />
-            <div className="w-full px-[10px] ">
-              <div className="flex justify-between w-full items-center">
-                <div className="text-sm/6 font-medium text-[#C9C7D0]">
-                  {name}
+        {data.channels.map((channel, index) => {
+          const { lastMessage } = channel;
+          return (
+            <Tab
+              key={channel.id}
+              className="block w-full h-[75px] py-[16px] px-[20px] flex focus:outline-none data-[selected]:bg-[#26252D] data-[hover]:bg-white/5 data-[selected]:data-[hover]:bg-white/10"
+            >
+              <Avatar className="shrink-0" name={channel.name} />
+              <div className="w-full px-[10px] ">
+                <div className="flex justify-between w-full items-center">
+                  <div className="text-sm/6 font-medium text-[#C9C7D0]">
+                    {channel.name}
+                  </div>
+                  <div className="text-xs font-medium text-[#7B798F]">
+                    22:04
+                  </div>
                 </div>
-                <div className="text-xs font-medium text-[#7B798F]">22:04</div>
+                {lastMessage && (
+                  <div className="text-xs font-medium text-[#7B798F] text-left">
+                    {lastMessage.sender}: {lastMessage.content}
+                  </div>
+                )}
               </div>
-              <div className="text-xs font-medium text-[#7B798F] text-left">
-                Alien: [Photo]
-              </div>
-            </div>
-          </Tab>
-        ))}
+            </Tab>
+          );
+        })}
       </TabList>
       <TabPanels className="grow h-full">
         {data.channels.map((channel, index) => {

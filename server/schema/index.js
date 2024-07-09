@@ -89,9 +89,9 @@ const ChannelType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
-    // lastMessage: {
-    //   type: MessageType
-    // }
+    lastMessage: {
+      type: MessageType,
+    },
   },
 });
 
@@ -153,11 +153,18 @@ const RootQueryType = new GraphQLObjectType({
     channels: {
       type: new GraphQLList(ChannelType),
       resolve: async (root, args, context) => {
-        const { channelsCollection } = context.collections;
+        const { channelsCollection, messagesCollection } = context.collections;
 
-        const result = await channelsCollection.find({}).toArray();
-        // console.log(result)
-        return result;
+        let result = await channelsCollection.find({}).toArray();
+        let result2 = result.map(async (channel) => {
+          const lastMessage = await messagesCollection.find({
+            channelID: channel._id.toString(),
+          })
+          .sort({ createdAt: -1 }).limit(1).toArray()
+          return {...channel, lastMessage: lastMessage.length ? lastMessage[0] : null,}
+        });
+        result2 = await Promise.all(result2)
+        return result2;
       },
     },
   },
@@ -213,7 +220,7 @@ const RootMutationType = new GraphQLObjectType({
       type: DeleteMessagePayload,
       args: {
         _id: { type: new GraphQLNonNull(GraphQLID) },
-        channelID: { type: GraphQLString }
+        channelID: { type: GraphQLString },
       },
       resolve: async (_, args = {}, context) => {
         const { io } = context;
