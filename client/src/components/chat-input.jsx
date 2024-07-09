@@ -7,11 +7,9 @@ import clsx from "clsx";
 const ChatInput = (props) => {
   const { channelID } = props;
   const inputRef = useRef(null);
-  const buttonRef = useRef(null);
 
   const usernameKey = "chat_username";
   const username = localStorage.getItem(usernameKey);
-  // console.log(username)
 
   const sendMessage = () => {
     if (inputRef.current.value) {

@@ -65,20 +65,6 @@ app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "index.html"));
 });
 
-app.get("/channels", async (req, res) => {
-  // const channelID = req.channelID;
-  // const messages = await getChannelMessages(channelID);
-  // res.send({messages: messages, channelID: channelID})
-  const channels = await getChannels();
-  res.send({ data: channels });
-});
-
-app.get("/channel-messages", async (req, res) => {
-  const {channelID} = req.query;
-  const messages = await getChannelMessages(channelID);
-  res.send({ data: messages });
-});
-
 app.all('/graphql', (req, res) => {
   handler(req, res);
 });
