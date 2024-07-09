@@ -36,7 +36,6 @@ const ChatMessage = (props) => {
   };
 
   useEffect(() => {
-    console.log(message._id, result);
     if (result.data && result.data.deleteMessage.success) {
       onDelete?.(result.data.deleteMessage._id);
     }
@@ -130,7 +129,6 @@ const ChatHistory = (props) => {
     });
 
     socket.on(`message-delete:${channelID}`, (messageID) => {
-      console.log(messageID);
       setMessages((prev) => {
         return [...prev].filter((m) => m._id !== messageID);
       });

@@ -8,46 +8,8 @@ import {
   GraphQLBoolean,
 } from "graphql";
 import { timeDifference } from "../utils/index.js";
-import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
+import { ObjectId } from "mongodb";
 import "dotenv/config";
-
-const uri = process.env.MONGDB_URI;
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
-async function initializeDatabase() {
-  await client.connect();
-  const db = client.db("chat");
-
-  return {
-    channelsCollection: db.collection("channels"),
-    messagesCollection: db.collection("messages"),
-  };
-}
-
-// Initialize the database when your application starts
-// const { todosCollection } = initializeDatabase().then(collections => {
-//   // Export or use the collections as needed
-// });
-
-const TodoType = new GraphQLObjectType({
-  name: "Todo",
-  fields: {
-    id: {
-      type: GraphQLString,
-    },
-    title: {
-      type: GraphQLString,
-    },
-  },
-});
 
 const MessageType = new GraphQLObjectType({
   name: "Message",
@@ -118,7 +80,8 @@ const RootQueryType = new GraphQLObjectType({
         channelID: { type: GraphQLString },
       },
       resolve: async (root, args = {}, context) => {
-        const { messagesCollection } = await initializeDatabase();
+        const { messagesCollection } = context.collections;
+
         const result = await messagesCollection.find(args).toArray();
         return result;
       },
@@ -127,18 +90,10 @@ const RootQueryType = new GraphQLObjectType({
     channels: {
       type: new GraphQLList(ChannelType),
       resolve: async (root, args, context) => {
-        const { channelsCollection } = await initializeDatabase();
+        const { channelsCollection } = context.collections;
+
         const result = await channelsCollection.find({}).toArray();
         return result;
-      },
-    },
-    todos: {
-      type: new GraphQLList(TodoType),
-      resolve: (root, args, context) => {
-        return [
-          { id: "1", title: "First todo" },
-          { id: "2", title: "Second todo" },
-        ];
       },
     },
   },
@@ -152,14 +107,11 @@ const RootMutationType = new GraphQLObjectType({
       args: {
         _id: { type: new GraphQLNonNull(GraphQLID) },
       },
-      resolve: async (_, args = {}) => {
-        // The logic to delete a message goes here
-        // 'args.id' contains the message ID passed from the client
-        console.log("deleteMessage", args);
-        const { messagesCollection } = await initializeDatabase();
+      resolve: async (_, args = {}, context) => {
+        const { messagesCollection } = context.collections;
+
         const filter = { _id: new ObjectId(args._id) };
         const result = await messagesCollection.deleteOne(filter);
-        console.log(result);
 
         return {
           _id: args._id,
