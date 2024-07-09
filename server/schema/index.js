@@ -6,10 +6,30 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLScalarType,
 } from "graphql";
 import { timeDifference } from "../utils/index.js";
 import { ObjectId } from "mongodb";
 import "dotenv/config";
+
+const GraphQLDate = new GraphQLScalarType({
+  name: "Date",
+  description: "Date scalar type",
+  parseValue: (value) => {
+    // value from the client input
+    return new Date(value);
+  },
+  serialize: (value) => {
+    // value sent to the client
+    return value instanceof Date ? value.toISOString() : null;
+  },
+  parseLiteral: (ast) => {
+    if (ast.kind === Kind.STRING) {
+      return new Date(ast.value);
+    }
+    return null;
+  },
+});
 
 const MessageType = new GraphQLObjectType({
   name: "Message",
@@ -40,8 +60,11 @@ const MessageType = new GraphQLObjectType({
           // Assuming 'getMessageById' is a function that retrieves a message by its ID
           // and 'context' has access to the necessary database methods
           // console.log(source.quoteID)
-          const quotedMessage = await context.collections.messagesCollection.findOne({_id: new ObjectId(source.quoteID)});
-          return quotedMessage ? quotedMessage.content : 'Quotation deleted';
+          const quotedMessage =
+            await context.collections.messagesCollection.findOne({
+              _id: new ObjectId(source.quoteID),
+            });
+          return quotedMessage ? quotedMessage.content : "Quotation deleted";
         }
         return null; // or undefined, if there is no quoteID
       },
@@ -65,6 +88,27 @@ const ChannelType = new GraphQLObjectType({
     },
     name: {
       type: GraphQLString,
+    },
+  },
+});
+
+const AddMessagePayload = new GraphQLObjectType({
+  name: "AddMessagePayload",
+  fields: {
+    content: {
+      type: GraphQLString,
+    },
+    sender: {
+      type: GraphQLString,
+    },
+    channelID: {
+      type: GraphQLString,
+    },
+    quoteID: {
+      type: GraphQLString,
+    },
+    createdAt: {
+      type: GraphQLDate,
     },
   },
 });
@@ -118,16 +162,65 @@ const RootQueryType = new GraphQLObjectType({
 const RootMutationType = new GraphQLObjectType({
   name: "RootMutationType",
   fields: {
+    addMessage: {
+      type: MessageType,
+      args: {
+        content: {
+          type: GraphQLString,
+        },
+        sender: {
+          type: GraphQLString,
+        },
+        channelID: {
+          type: GraphQLString,
+        },
+        quoteID: {
+          type: GraphQLString,
+        },
+        createdAt: {
+          type: GraphQLDate,
+        },
+      },
+      resolve: async (_, args = {}, context) => {
+        const { io } = context;
+        const { messagesCollection } = context.collections;
+        const result = await messagesCollection.insertOne(args);
+        const output = { ...args };
+        if (result.acknowledged && args.quoteID) {
+          const id = result.insertedId;
+
+          if (args.quoteID) {
+            const quotedMessage = await messagesCollection.findOne({
+              _id: new ObjectId(args.quoteID),
+            });
+            const quoteContent = quotedMessage
+              ? quotedMessage.content
+              : "Quotation deleted";
+            output._id = id;
+            output.quotedMessageContent = quoteContent;
+          }
+          io.emit(`message:${args.channelID}`, output);
+        }
+
+        return result;
+      },
+    },
     deleteMessage: {
       type: DeleteMessagePayload,
       args: {
         _id: { type: new GraphQLNonNull(GraphQLID) },
+        channelID: { type: GraphQLString }
       },
       resolve: async (_, args = {}, context) => {
+        const { io } = context;
         const { messagesCollection } = context.collections;
 
         const filter = { _id: new ObjectId(args._id) };
         const result = await messagesCollection.deleteOne(filter);
+
+        if (result.deletedCount > 0) {
+          io.emit(`message-delete:${args.channelID}`, args.id);
+        }
 
         return {
           _id: args._id,

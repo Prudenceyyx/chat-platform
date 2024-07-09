@@ -6,8 +6,8 @@ import Avatar from "./avatar";
 import ChatQuote from "./chat-quote";
 
 const DELETE_MESSAGE_MUTATION = gql`
-  mutation DeleteMessage($_id: ID!) {
-    deleteMessage(_id: $_id) {
+  mutation DeleteMessage($_id: ID!, $channelID: String!) {
+    deleteMessage(_id: $_id, channelID: $channelID) {
       _id
       success
       message
@@ -20,8 +20,8 @@ const ChatMessage = (props) => {
 
   const [result, deleteMessage] = useMutation(DELETE_MESSAGE_MUTATION);
 
-  const handleDelete = (messageID) => {
-    deleteMessage({ _id: messageID });
+  const handleDelete = (messageID, channelID) => {
+    deleteMessage({ _id: messageID, channelID });
   };
 
   useEffect(() => {
@@ -83,14 +83,16 @@ const ChatMessage = (props) => {
               <img src="/assets/icons/quote.svg" className="h-4 w-4" />
             </Button>
             <Button
-              onClick={() => handleDelete(message._id)}
+              onClick={() => handleDelete(message._id, message.channelID)}
               className="h-9 w-9 flex items-center justify-center data-[hover]:bg-gray-600 rounded-md transition-bg duration-100"
             >
               <img src="/assets/icons/delete.svg" className="h-4 w-4" />
             </Button>
           </div>
         </div>
-        {message.quoteID && <ChatQuote content={message.quotedMessageContent} isUser={isUser} />}
+        {message.quoteID && (
+          <ChatQuote content={message.quotedMessageContent} isUser={isUser} />
+        )}
       </div>
     </li>
   );

@@ -3,24 +3,23 @@ import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { Server } from "socket.io";
-import { MongoClient,  ServerApiVersion } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
 import "dotenv/config";
 import cors from "cors";
-import { createHandler } from 'graphql-http/lib/use/http';
-import schema from './schema/index.js';
-import { addToChat } from "./db.js";
+import { createHandler } from "graphql-http/lib/use/http";
+import schema from "./schema/index.js";
 
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const list = [process.env.FRONTEND_URL]
+const list = [process.env.FRONTEND_URL];
 const CORS_OPTIONS = {
   cors: {
     origin: function (origin, callback) {
       if (list.indexOf(origin) !== -1) {
-        callback(null, true)
+        callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'))
+        callback(new Error("Not allowed by CORS"));
       }
     },
     methods: ["GET", "POST"],
@@ -53,9 +52,15 @@ async function initializeDatabase() {
   };
 }
 
-const collections = await initializeDatabase()
+const collections = await initializeDatabase();
+const createContext = (req, res) => {
+  return {
+    io,
+    collections,
+  };
+};
 
-const handler = createHandler({ schema, context: {collections} });
+const handler = createHandler({ schema, context: createContext });
 
 app.use(cors(CORS_OPTIONS));
 
@@ -63,21 +68,21 @@ app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "index.html"));
 });
 
-app.all('/graphql', (req, res) => {
+app.all("/graphql", (req, res) => {
   handler(req, res);
 });
 
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-  socket.on("message", async (msg) => {
-    const result = await addToChat(msg);
-    io.emit(`message:${msg.channelID}`, {...msg});
-  });
+  // socket.on("message", async (msg) => {
+  //   const result = await addToChat(msg);
+  //   io.emit(`message:${msg.channelID}`, { ...msg });
+  // });
 
-  socket.on("message-delete", async (messageID, channelID) => {
-    io.emit(`message-delete:${channelID}`, messageID);
-  });
+  // socket.on("message-delete", async (messageID, channelID) => {
+  //   io.emit(`message-delete:${channelID}`, messageID);
+  // });
 });
 
 server.listen(3000, () => {

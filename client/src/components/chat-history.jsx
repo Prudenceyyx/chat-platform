@@ -13,6 +13,7 @@ const MessagesQuery = gql`
       _id
       content
       sender
+      channelID
       quoteID
       quotedMessageContent
       createdAt

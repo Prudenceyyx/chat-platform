@@ -1,12 +1,26 @@
-import React, { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
-import { socket } from "../App";
+import React, { useCallback, useImperativeHandle, useRef, useState } from "react";
 import { Field, Textarea } from "@headlessui/react";
 import clsx from "clsx";
 import ChatQuote from "./chat-quote";
+import { gql, useMutation } from "urql";
+
+
+const ADD_MESSAGE_MUTATION = gql`
+  mutation AddMessage($content: String!, $sender: String!, $channelID: String!, $quoteID: String, $createdAt: Date!) {
+    addMessage(content:$content, sender:$sender, channelID:$channelID, quoteID:$quoteID, createdAt:$createdAt) {
+      content
+      sender
+      channelID
+      quoteID
+      createdAt
+    }
+  }
+`;
 
 const ChatInput = (props, ref) => {
   const { channelID, quotingMessage } = props;
   const [quotation, setQuotation] = useState(undefined);
+  const [result, addMessage] = useMutation(ADD_MESSAGE_MUTATION);
 
   useImperativeHandle(ref, () => ({
     quote: (msg) => {
@@ -26,10 +40,10 @@ const ChatInput = (props, ref) => {
         sender: username,
         channelID,
         createdAt: new Date(),
-        quoteID: quotation._id ? quotation._id : null,
+        quoteID: quotation&& quotation._id ? quotation._id : null,
       };
 
-      socket.emit("message", newMessage);
+      addMessage(newMessage)
       inputRef.current.value = "";
       setQuotation(null)
     }
