@@ -8,7 +8,7 @@ const Avatar = (props) => {
     <div
       className={clsx("rounded-full h-[40px] w-[40px] bg-white", className)}
       {...otherProps}>
-      <RandomAvatar name={name} size={40} mode="pattern" />
+      <RandomAvatar name={name} size={40} />
     </div>
   );
 };

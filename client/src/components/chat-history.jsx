@@ -1,35 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import Avatar from "./avatar";
 import clsx from "clsx";
 import { socket } from "../App";
-import { timeDifference } from "../utils";
+import { gql, useQuery } from "urql";
 
-function useChannelMessages(channelID) {
-  return useQuery({
-    queryKey: ["channel-messages" + channelID],
-    queryFn: async () => {
-      const { data } = await axios.get(
-        "http://localhost:3000/channel-messages",
-        {
-          params: {
-            channelID: channelID,
-          },
-          headers: {
-            "Access-Control-Allow-Origin": "http://localhost:3001",
-          },
-        }
-      );
-      return data;
-    },
-  });
-}
+const MessagesQuery = gql`
+  query GetMessages($channelID: String!) {
+    messages(channelID: $channelID) {
+      _id
+      content
+      sender
+      createdAt
+    }
+  }
+`;
 
 const ChatMessage = (props) => {
   const { message, isUser } = props;
-  const now = new Date();
-  const timediff =  timeDifference(now, new Date(message.createdAt))
 
   return (
     <li
@@ -38,7 +25,7 @@ const ChatMessage = (props) => {
       })}
     >
       <Avatar
-      name={message.sender}
+        name={message.sender}
         className={clsx("shrink-0", {
           "order-2 ml-[10px]": isUser,
           "mr-[10px]": !isUser,
@@ -54,7 +41,7 @@ const ChatMessage = (props) => {
             {message.sender}
           </span>
           <span className="text-xs font-medium text-[#7B798F] ml-[10px]">
-            {timediff}
+            {message.createdAt}
           </span>
         </div>
         <div
@@ -75,7 +62,15 @@ const ChatMessage = (props) => {
 
 const ChatHistory = (props) => {
   const { channelID } = props;
-  const { data, isLoading, error } = useChannelMessages(channelID);
+  const [result, reexecuteQuery] = useQuery({
+    query: MessagesQuery,
+    variables: {
+      channelID: channelID,
+    },
+  });
+
+  const { data, fetching, error } = result;
+
   const [messages, setMessages] = useState([]);
   const ref = useRef(null);
 
@@ -85,6 +80,7 @@ const ChatHistory = (props) => {
   useEffect(() => {
     setMessages([]);
     socket.on(`message:${channelID}`, (msg) => {
+      console.log(msg);
       setMessages((prev) => {
         return [...prev, msg];
       });
@@ -96,10 +92,10 @@ const ChatHistory = (props) => {
   }, [channelID]);
 
   useEffect(() => {
-    if (!isLoading) {
-      setMessages(data.data);
+    if (!fetching) {
+      setMessages(data.messages);
     }
-  }, [isLoading, channelID]);
+  }, [fetching, channelID]);
 
   useEffect(() => {
     /** @type {HTMLElement} */
@@ -108,10 +104,8 @@ const ChatHistory = (props) => {
       element.scrollTop = element.scrollHeight;
     }
   }, [messages, channelID]);
-  // console.log(channelID, messages, isLoading);
 
-  if (isLoading) return <div>Loading...</div>;
-
+  if (fetching) return <div>Loading...</div>;
   if (error) return "An error has occurred: " + error.message;
 
   return (

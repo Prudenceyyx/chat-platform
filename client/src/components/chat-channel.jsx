@@ -2,25 +2,10 @@ import React from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import ChatInput from "./chat-input";
 import Search from "./search";
-// import { useQuery } from "@tanstack/react-query";
-// import axios from "axios";
 import ChatHistory from "./chat-history";
 import Avatar from "./avatar";
 import { gql, useQuery } from "urql";
 
-// function useChannels() {
-//   return useQuery({
-//     queryKey: ["channels"],
-//     queryFn: async () => {
-//       const { data } = await axios.get("http://localhost:3000/channels", {
-//         headers: {
-//           "Access-Control-Allow-Origin": "http://localhost:3001",
-//         },
-//       });
-//       return data;
-//     },
-//   });
-// }
 
 const ChannelsQuery = gql`
   query {

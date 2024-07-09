@@ -26,7 +26,9 @@ async function initializeDatabase() {
   const db = client.db("chat");
 
   return {
-    todosCollection: db.collection("channels"),
+    channelsCollection: db.collection("channels"),
+    messagesCollection: db.collection("messages"),
+
   };
 }
 
@@ -47,9 +49,13 @@ const TodoType = new GraphQLObjectType({
   },
 });
 
-const ChatType = new GraphQLObjectType({
-  name: "Chat",
+const MessageType = new GraphQLObjectType({
+  name: "Message",
   fields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      resolve: (source) => source._id,
+    },
     _id: {
       type: new GraphQLNonNull(GraphQLID),
     },
@@ -57,6 +63,9 @@ const ChatType = new GraphQLObjectType({
       type: GraphQLString,
     },
     sender: {
+      type: GraphQLString,
+    },
+    channelID: {
       type: GraphQLString,
     },
     createdAt: {
@@ -85,11 +94,23 @@ const ChannelType = new GraphQLObjectType({
 const RootQueryType = new GraphQLObjectType({
   name: "RootQueryType",
   fields: {
+    messages: {
+      type: new GraphQLList(MessageType),
+      args: {
+        channelID: { type: GraphQLString },
+      },
+      resolve: async (root, args={}, context) => {
+        const { messagesCollection } = await initializeDatabase();
+        const result = await messagesCollection.find(args).toArray();
+        return result;
+      },
+
+    },
     channels: {
       type: new GraphQLList(ChannelType),
       resolve: async (root, args, context) => {
-        const { todosCollection } = await initializeDatabase();
-        const result = await todosCollection.find({}).toArray();
+        const { channelsCollection } = await initializeDatabase();
+        const result = await channelsCollection.find({}).toArray();
         return result;
       },
     },
