@@ -21,7 +21,7 @@ const MessagesQuery = gql`
 `;
 
 const ChatHistory = (props) => {
-  const { channelID } = props;
+  const { channelID, onQuoted } = props;
   const [result, reexecuteQuery] = useQuery({
     query: MessagesQuery,
     variables: {
@@ -82,6 +82,7 @@ const ChatHistory = (props) => {
             key={msg._id}
             message={msg}
             isUser={msg.sender === username}
+            handleQuote={() => {onQuoted(msg)}}
             onDelete={(messageID) => {
               setMessages((prev) => {
                 return [...prev].filter((m) => m._id !== messageID);

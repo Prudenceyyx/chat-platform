@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useRef } from "react";
 import ChatHistory from "./chat-history";
 import ChatInput from "./chat-input";
 
 const ChatPanel = (props) => {
   const { channel } = props;
+
+  const inputRef = useRef(null);
+
+  const onQuoted = (msg) => {
+    inputRef.current.quote(msg)
+  }
+
   return (
     <>
       <div
@@ -12,8 +19,8 @@ const ChatPanel = (props) => {
       >
         {channel.name}
       </div>
-      <ChatHistory channelID={channel.id} />
-      <ChatInput channelID={channel.id} />
+      <ChatHistory channelID={channel.id} onQuoted={onQuoted} />
+      <ChatInput channelID={channel.id} ref={inputRef} />
     </>
   );
 };

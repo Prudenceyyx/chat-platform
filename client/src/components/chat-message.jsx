@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import {gql, useMutation } from "urql";
+import { gql, useMutation } from "urql";
 import clsx from "clsx";
-import {Button} from '@headlessui/react'
+import { Button } from "@headlessui/react";
 import Avatar from "./avatar";
+import ChatQuote from "./chat-quote";
 
 const DELETE_MESSAGE_MUTATION = gql`
   mutation DeleteMessage($_id: ID!) {
@@ -89,19 +90,7 @@ const ChatMessage = (props) => {
             </Button>
           </div>
         </div>
-        {message.quoteID && (
-          <div
-            className={clsx(
-              "rounded-[10px] p-[10px] w-fit max-w-[350px] truncate bg-[#35343E] mt-[5px]",
-              isUser && "ml-auto"
-            )}
-          >
-            <div className="h-[20px] w-[2px] bg-[#04B17D] mr-[10px] inline-block align-middle"></div>
-            <span className="text-[#7B798F] leading-[20px] align-middle">
-              {message.quotedMessageContent}
-            </span>
-          </div>
-        )}
+        {message.quoteID && <ChatQuote content={message.quotedMessageContent} isUser={isUser} />}
       </div>
     </li>
   );
