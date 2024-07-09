@@ -89,6 +89,9 @@ const ChannelType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
+    // lastMessage: {
+    //   type: MessageType
+    // }
   },
 });
 
@@ -153,6 +156,7 @@ const RootQueryType = new GraphQLObjectType({
         const { channelsCollection } = context.collections;
 
         const result = await channelsCollection.find({}).toArray();
+        // console.log(result)
         return result;
       },
     },
