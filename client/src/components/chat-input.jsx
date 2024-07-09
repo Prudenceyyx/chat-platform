@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
 import { socket } from "../App";
 import { Field, Textarea } from "@headlessui/react";
 import clsx from "clsx";

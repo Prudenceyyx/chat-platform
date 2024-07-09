@@ -6,7 +6,6 @@ import ChatChannels from "./components/chat-channel";
 import "./style.scss";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Chance from "./utils/chance.min.js";
-
 import { Client, Provider, cacheExchange, fetchExchange } from "urql";
 
 const client = new Client({

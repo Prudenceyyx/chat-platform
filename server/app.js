@@ -8,13 +8,12 @@ import "dotenv/config";
 import cors from "cors";
 import { createHandler } from 'graphql-http/lib/use/http';
 import schema from './schema/index.js';
-
-import { getChannelMessages, getChannels, addToChat } from "./db.js";
+import { addToChat } from "./db.js";
 
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const list = ['http://localhost:3001']
+const list = [process.env.FRONTEND_URL]
 const CORS_OPTIONS = {
   cors: {
     origin: function (origin, callback) {
@@ -27,7 +26,6 @@ const CORS_OPTIONS = {
     methods: ["GET", "POST"],
     allowedHeaders: ["Access-Control-Allow-Origin"],
     // credentials: true,
-    
   },
 };
 

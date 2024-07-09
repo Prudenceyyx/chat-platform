@@ -30,6 +30,22 @@ const MessageType = new GraphQLObjectType({
     channelID: {
       type: GraphQLString,
     },
+    quoteID: {
+      type: GraphQLString,
+    },
+    quotedMessageContent: {
+      type: GraphQLString,
+      resolve: async (source, args, context) => {
+        if (source.quoteID) {
+          // Assuming 'getMessageById' is a function that retrieves a message by its ID
+          // and 'context' has access to the necessary database methods
+          // console.log(source.quoteID)
+          const quotedMessage = await context.collections.messagesCollection.findOne({_id: new ObjectId(source.quoteID)});
+          return quotedMessage ? quotedMessage.content : 'Quotation deleted';
+        }
+        return null; // or undefined, if there is no quoteID
+      },
+    },
     createdAt: {
       type: GraphQLString,
       resolve: (source) => timeDifference(new Date(), source.createdAt),

@@ -11,6 +11,8 @@ const MessagesQuery = gql`
       _id
       content
       sender
+      quoteID
+      quotedMessageContent
       createdAt
     }
   }
@@ -98,6 +100,14 @@ const ChatMessage = (props) => {
             </Button>
           </div>
         </div>
+        {message.quoteID && (
+          <div className={clsx("rounded-[10px] p-[10px] w-fit max-w-[350px] truncate bg-[#35343E] mt-[5px]", 
+            isUser && 'ml-auto'
+          )}>
+            <div className="h-[20px] w-[2px] bg-[#04B17D] mr-[10px] inline-block align-middle"></div>
+            <span className="text-[#7B798F] leading-[20px] align-middle">{message.quotedMessageContent}</span> 
+          </div>
+        )}
       </div>
     </li>
   );
