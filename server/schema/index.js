@@ -197,7 +197,8 @@ const RootMutationType = new GraphQLObjectType({
         const { messagesCollection } = context.collections;
         const result = await messagesCollection.insertOne(args);
         const output = { ...args };
-        if (result.acknowledged && args.quoteID) {
+        if (result.acknowledged) {
+
           const id = result.insertedId;
 
           if (args.quoteID) {
@@ -210,7 +211,10 @@ const RootMutationType = new GraphQLObjectType({
             output._id = id;
             output.quotedMessageContent = quoteContent;
           }
+
           io.emit(`message:${args.channelID}`, output);
+
+          return output;
         }
 
         return result;
