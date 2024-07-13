@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { io } from "socket.io-client";
 import Nav from "./components/nav";
 import Side from "./components/side";
 import ChatPage from "./components/chat-page";
 import "./style.scss";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./utils/chance.min.js";
 import { Client, Provider, cacheExchange, fetchExchange } from "urql";
 
@@ -13,10 +12,7 @@ const client = new Client({
   exchanges: [cacheExchange, fetchExchange],
 });
 
-const socket = io(
-  "http://localhost:3000"
-  // { withCredentials: true }
-);
+const socket = io("http://localhost:3000", { withCredentials: true });
 
 // const queryClient = new QueryClient();
 const App = (props) => {

@@ -12,11 +12,12 @@ import schema from "./schema/index.js";
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const list = [process.env.FRONTEND_URL];
+const list = [process.env.FRONTEND_URL,  'http://localhost:3000'];
 const CORS_OPTIONS = {
   cors: {
-    origin: function (origin, callback) {
-      if (list.indexOf(origin) !== -1) {
+    origin: 
+    function (origin, callback) {
+      if (list.indexOf(origin) !== -1 || typeof origin === 'undefined') {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -24,7 +25,7 @@ const CORS_OPTIONS = {
     },
     methods: ["GET", "POST"],
     allowedHeaders: ["Access-Control-Allow-Origin"],
-    // credentials: true,
+    credentials: true,
   },
 };
 
@@ -63,9 +64,13 @@ const createContext = (req, res) => {
 const handler = createHandler({ schema, context: createContext });
 
 app.use(cors(CORS_OPTIONS));
+app.use(express.static(join(__dirname, '../client/dist')));
+
+const distDir = join(__dirname, '../client/dist/index.html')
+console.log(distDir);
 
 app.get("/", (req, res) => {
-  res.sendFile(join(__dirname, "index.html"));
+  res.sendFile(join(__dirname, '../client/dist/index.html'));
 });
 
 app.all("/graphql", (req, res) => {
